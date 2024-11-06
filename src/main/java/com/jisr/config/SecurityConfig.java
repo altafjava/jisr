@@ -18,7 +18,8 @@ public class SecurityConfig {
     	http
         .csrf(AbstractHttpConfigurer::disable)  // Updated csrf disabling
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/api/auth/register").permitAll()
+            .requestMatchers("/api/auth/register", "/api/admin/update-setting")
+            .permitAll()
             .anyRequest().authenticated()
         );
         return http.build();

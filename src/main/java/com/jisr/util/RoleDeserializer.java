@@ -10,7 +10,7 @@ public class RoleDeserializer extends JsonDeserializer<Role> {
 	
     @Override
     public Role deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        String roleValue = p.getText().toUpperCase(); // Convert to uppercase
-        return Role.valueOf(roleValue); // Convert to enum
+        String roleValue = p.getText().toUpperCase();
+        return Role.valueOf(roleValue);
     }
 }

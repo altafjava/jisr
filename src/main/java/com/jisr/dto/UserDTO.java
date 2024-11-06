@@ -47,10 +47,6 @@ public class UserDTO {
 	@NotNull(message = "Role is mandatory")
     @JsonDeserialize(using = RoleDeserializer.class) // Use the custom deserializer
 	
-//	@NotBlank(message = "Role is mandatory")
-//    @Pattern(regexp = "^(ADMIN|PATIENT|CAREGIVER|HEALTHCARE_PROVIDER)$", message = "Role must be one of ADMIN, PATIENT, CAREGIVER, HEALTHCARE_PROVIDER")
-//    private String role;
-	
 	@NotNull(message = "Role is mandatory")
     @Enumerated(EnumType.STRING) // Directly using Role type
     private Role role;
