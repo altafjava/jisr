@@ -11,13 +11,13 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/register")
 @AllArgsConstructor
 public class UserController {
 
 	private final UserService userService;
 
-	@PostMapping("/register")
+	@PostMapping("/user")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
 		userService.registerUser(userDTO);
 		return ResponseEntity.ok("User registered successfully.");

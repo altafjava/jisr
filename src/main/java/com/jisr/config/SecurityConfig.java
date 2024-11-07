@@ -16,9 +16,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     	http
-        .csrf(AbstractHttpConfigurer::disable)  // Updated csrf disabling
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/api/auth/register", "/api/admin/update-setting")
+            .requestMatchers("/api/auth/**", "/api/admin/**")
             .permitAll()
             .anyRequest().authenticated()
         );

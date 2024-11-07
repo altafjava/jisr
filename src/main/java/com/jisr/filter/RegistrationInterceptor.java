@@ -7,6 +7,7 @@ import com.jisr.dto.UserDTO;
 import com.jisr.exception.RegistrationDisabledException; // Add import
 import com.jisr.service.SystemSettingService;
 import com.jisr.service.WaitingQueueService;
+import com.jisr.util.Constants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class RegistrationInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		if ("/api/auth/register".equals(request.getRequestURI()) && request.getMethod().equalsIgnoreCase("POST")) {
-			if (!systemSettingService.isSettingEnabled("̥")) {
+		if ("/api/auth/register/user".equals(request.getRequestURI()) && request.getMethod().equalsIgnoreCase("POST")) {
+			if (!systemSettingService.isSettingEnabled(Constants.REGISTERATION_ENABLED)) {
 				String requestBody = RequestBodyCachingFilter.getCachedRequestBody();
 				if (requestBody == null || requestBody.isEmpty()) {
 					throw new RegistrationDisabledException("Empty request body");

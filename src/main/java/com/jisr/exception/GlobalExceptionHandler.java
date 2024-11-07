@@ -2,6 +2,7 @@ package com.jisr.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,8 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 "An unexpected error occurred. Please try again later.",
-                null
+                null,
+                ExceptionUtils.getStackTrace(ex)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -34,7 +36,8 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Validation failed for one or more fields",
-                validationErrors
+                validationErrors,
+                ExceptionUtils.getStackTrace(ex)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -56,7 +59,8 @@ public class GlobalExceptionHandler {
 	            HttpStatus.SERVICE_UNAVAILABLE.value(),
 	            HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
 	            ex.getMessage(),
-	            null // Or any additional details you want to include
+	            null, // Or any additional details you want to include
+	            ExceptionUtils.getStackTrace(ex)
 	    );
 	    return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
 	}
