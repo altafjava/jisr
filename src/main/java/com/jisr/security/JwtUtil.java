@@ -5,6 +5,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -31,6 +32,8 @@ public class JwtUtil {
 		try {
 			getJwtParser().parseSignedClaims(token).getPayload();
 			return true;
+		} catch (ExpiredJwtException e) {
+			return false;
 		} catch (SignatureException e) {
 			return false;
 		}

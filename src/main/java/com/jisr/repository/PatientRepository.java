@@ -1,12 +1,13 @@
 package com.jisr.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.jisr.entity.Patient;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-	Patient findByEmail(String email);
+	Optional<Patient> findByEmail(String email);
 
-	Patient findByPhoneNumber(String phoneNumber);
+	Optional<Patient> findByPhoneNumber(String phoneNumber);
 
 }

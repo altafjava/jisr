@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -102,4 +103,29 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+	
+	@ExceptionHandler(TokenNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleTokenNotValidException(TokenNotValidException ex) {
+	    ErrorResponse errorResponse = new ErrorResponse(
+	            HttpStatus.BAD_REQUEST.value(),
+	            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+	            ex.getMessage(),
+	            null,
+	            null
+	    );
+	    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                "JWT token has expired. Please log in again.",
+                null,
+                null
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
 }

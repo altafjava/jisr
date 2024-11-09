@@ -20,7 +20,7 @@ public class EmailService {
 		simpleMailMessage.setText(body);
 		mailSender.send(simpleMailMessage);
 	}
-	
+
 	public void sendEmail(String to, String subject, String body) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setTo(to);
@@ -28,4 +28,5 @@ public class EmailService {
 		simpleMailMessage.setText(body);
 		mailSender.send(simpleMailMessage);
 	}
+
 }

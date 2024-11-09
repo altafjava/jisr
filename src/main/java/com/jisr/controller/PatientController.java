@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.jisr.dto.LoginRequestDTO;
+import com.jisr.dto.PasswordResetDTO;
+import com.jisr.dto.PasswordResetRequestDTO;
 import com.jisr.dto.PatientDTO;
 import com.jisr.security.JwtResponse;
 import com.jisr.security.JwtUtil;
@@ -43,4 +45,24 @@ public class PatientController {
 		return ResponseEntity.ok(new JwtResponse(jwt, emailOrPhone));
 	}
 
+	@PostMapping("/password-reset/request")
+	public ResponseEntity<?> requestPasswordReset(@RequestBody PasswordResetRequestDTO passwordResetRequestDTO) {
+		patientService.sendPasswordResetLink(passwordResetRequestDTO.getEmailOrPhone());
+		return ResponseEntity.ok("Password reset link has been sent.");
+	}
+
+	@PostMapping("/password-reset")
+	public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDTO resetDTO) {
+		patientService.resetPassword(resetDTO);
+		return ResponseEntity.ok("Password has been reset successfully.");
+	}
+
+	/**
+	 * Need to implement the token Blacklist using Redis
+	 */
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout() {
+		SecurityContextHolder.clearContext();
+		return ResponseEntity.ok("Logged out successfully.");
+	}
 }

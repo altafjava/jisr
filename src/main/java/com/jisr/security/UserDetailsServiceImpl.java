@@ -1,5 +1,6 @@
 package com.jisr.security;
 
+import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,12 +19,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String emailOrPhone) throws UsernameNotFoundException {
-        Patient patient = emailOrPhone.contains("@")
+        Optional<Patient> patient = emailOrPhone.contains("@")
             ? patientRepository.findByEmail(emailOrPhone)
             : patientRepository.findByPhoneNumber(emailOrPhone);
-        if (patient == null) {
+        if (patient.isEmpty()) {
             throw new UsernameNotFoundException("User not found with email or phone: " + emailOrPhone);
         }
-        return new UserDetailsImpl(patient);
+        return new UserDetailsImpl(patient.get());
     }
 }
