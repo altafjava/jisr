@@ -1,6 +1,8 @@
-package com.jisr.model;
+package com.jisr.entity;
 
-public enum Role {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Role implements GrantedAuthority {
 	ADMIN("admin"),
 	PATIENT("patient"),
 	CAREGIVER("caregiver"),
@@ -14,5 +16,10 @@ public enum Role {
 
 	public String getRoleName() {
 		return roleName;
+	}
+
+	@Override
+	public String getAuthority() {
+		return name();
 	}
 }

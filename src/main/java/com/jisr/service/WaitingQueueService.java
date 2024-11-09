@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.jisr.dto.UserDTO;
-import com.jisr.model.Role;
-import com.jisr.model.WaitingQueue;
+import com.jisr.dto.PatientDTO;
+import com.jisr.entity.Role;
+import com.jisr.entity.WaitingQueue;
 import com.jisr.repository.WaitingQueueRepository;
 import com.jisr.util.Constants;
 import com.jisr.util.EmailService;
@@ -33,7 +33,7 @@ public class WaitingQueueService {
 	}
 
 	@Transactional
-	public Long addToWaitingQueue(UserDTO userDTO, Role role) {
+	public Long addToWaitingQueue(PatientDTO userDTO, Role role) {
 		WaitingQueue waitingQueue = new WaitingQueue();
 		waitingQueue.setUsername(userDTO.getUsername());
 		waitingQueue.setFirstName(userDTO.getFirstName());

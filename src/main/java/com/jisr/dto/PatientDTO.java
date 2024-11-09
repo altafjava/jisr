@@ -1,7 +1,7 @@
 package com.jisr.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jisr.model.Role;
+import com.jisr.entity.Role;
 import com.jisr.util.RoleDeserializer;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class PatientDTO {
 
 	@NotBlank(message = "Username is mandatory")
 	@Pattern(regexp = "^[a-zA-Z0-9]{5,20}$", message = "Username must be alphanumeric and between 5-20 characters")
@@ -45,17 +45,16 @@ public class UserDTO {
 	private String password;
 
 	@NotNull(message = "Role is mandatory")
-    @JsonDeserialize(using = RoleDeserializer.class) // Use the custom deserializer
-	
+	@JsonDeserialize(using = RoleDeserializer.class)
+
 	@NotNull(message = "Role is mandatory")
-    @Enumerated(EnumType.STRING) // Directly using Role type
-    private Role role;
-	
-	
+	@Enumerated(EnumType.STRING)
+	private Role role;
+
 	@AssertTrue(message = "Relationship is mandatory for Caregiver role")
-    private boolean isValidRelationship() {
-        return !"CAREGIVER".equalsIgnoreCase(role.name()) || (relationship != null && !relationship.isBlank());
-    }
+	private boolean isValidRelationship() {
+		return !"CAREGIVER".equalsIgnoreCase(role.name()) || (relationship != null && !relationship.isBlank());
+	}
 
 	private String relationship;
 }

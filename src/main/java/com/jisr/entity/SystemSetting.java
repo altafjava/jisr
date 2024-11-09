@@ -1,4 +1,4 @@
-package com.jisr.model;
+package com.jisr.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

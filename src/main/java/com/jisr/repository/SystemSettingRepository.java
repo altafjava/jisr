@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import com.jisr.model.SystemSetting;
+import com.jisr.entity.SystemSetting;
 
 @Repository
 public interface SystemSettingRepository extends JpaRepository<SystemSetting, Long> {

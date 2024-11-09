@@ -1,10 +1,12 @@
 package com.jisr.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class LoginRequestDto {
-	private String email;
-    private String phoneNumber;
-    private String password;
+public class LoginRequestDTO {
+	@NotBlank
+	private String emailOrPhone;
+	@NotBlank
+	private String password;
 }

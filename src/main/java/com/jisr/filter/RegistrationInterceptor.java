@@ -3,7 +3,7 @@ package com.jisr.filter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jisr.dto.UserDTO;
+import com.jisr.dto.PatientDTO;
 import com.jisr.exception.RegistrationDisabledException; // Add import
 import com.jisr.service.SystemSettingService;
 import com.jisr.service.WaitingQueueService;
@@ -22,13 +22,13 @@ public class RegistrationInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		if ("/api/auth/register/user".equals(request.getRequestURI()) && request.getMethod().equalsIgnoreCase("POST")) {
+		if ("/api/auth/patients/signup".equals(request.getRequestURI()) && request.getMethod().equalsIgnoreCase("POST")) {
 			if (!systemSettingService.isSettingEnabled(Constants.REGISTERATION_ENABLED)) {
 				String requestBody = RequestBodyCachingFilter.getCachedRequestBody();
 				if (requestBody == null || requestBody.isEmpty()) {
 					throw new RegistrationDisabledException("Empty request body");
 				}
-				UserDTO userDTO = objectMapper.readValue(requestBody, UserDTO.class);
+				PatientDTO userDTO = objectMapper.readValue(requestBody, PatientDTO.class);
 				String username = userDTO.getUsername();
 				Long positionInQueue = waitingQueueService.getPositionInQueue(username);
 				// If position is null, the user is not in the queue, so add them

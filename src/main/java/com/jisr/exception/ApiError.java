@@ -17,5 +17,4 @@ public class ApiError {
 		this.errorDetails = errorDetails;
 		this.timestamp = timestamp;
 	}
-
 }
