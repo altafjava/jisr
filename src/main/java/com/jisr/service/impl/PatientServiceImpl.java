@@ -1,20 +1,16 @@
 package com.jisr.service.impl;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.jisr.dto.PasswordResetDTO;
-import com.jisr.dto.PatientDTO;
-import com.jisr.dto.PatientHealthDetailsDTO;
+import org.springframework.web.multipart.MultipartFile;
+import com.jisr.dto.PatientProfileDTO;
 import com.jisr.entity.Patient;
 import com.jisr.entity.PatientHealthDetails;
-import com.jisr.repository.PatientHealthDetailsRepository;
 import com.jisr.repository.PatientRepository;
+import com.jisr.service.FileStorageService;
 import com.jisr.service.PatientService;
-import com.jisr.service.SmsService;
-import com.jisr.service.TokenService;
-import com.jisr.util.EmailService;
+import com.jisr.util.PatientServiceUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,77 +18,35 @@ import lombok.RequiredArgsConstructor;
 public class PatientServiceImpl implements PatientService {
 
 	private final PatientRepository patientRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final PatientHealthDetailsRepository patientHealthDetailsRepository;
-	private final EmailService emailService;
-	private final TokenService tokenService;
-	private final SmsService smsService;
-	@Value("${password-reset-request}")
-	private String passwordResetRequestUrl;
+	private final FileStorageService fileStorageService;
 
 	@Override
-	public Patient registerUser(PatientDTO userDTO) {
-		Patient user = new Patient();
-		user.setUsername(userDTO.getUsername());
-		user.setFirstName(userDTO.getFirstName());
-		user.setFatherName(userDTO.getFatherName());
-		user.setLastName(userDTO.getLastName());
-		user.setEmail(userDTO.getEmail());
-		user.setPhoneNumber(userDTO.getPhoneNumber());
-		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-		user.setRole(userDTO.getRole()); // Directly set Role enum
-		user.setRelationship(userDTO.getRelationship());
-		return patientRepository.save(user);
+	@PreAuthorize("#patientId == principal.id")
+	public PatientProfileDTO getPatientProfile(Long patientId) {
+		Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+		PatientHealthDetails patientHealthDetails = patient.getPatientHealthDetails();
+		PatientProfileDTO patientProfileDTO = PatientServiceUtil.buildPatientProfileDTO(patient, patientHealthDetails);
+		return patientProfileDTO;
 	}
 
+	@Override
 	@Transactional
-	public void savePatientHealthDetails(Long userId, PatientHealthDetailsDTO info) {
-		Patient patient = patientRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-		PatientHealthDetails patientHealthDetails = patientHealthDetailsRepository.findByPatient(patient).orElse(new PatientHealthDetails());
-		patientHealthDetails.setCancerType(info.getCancerType());
-		patientHealthDetails.setCancerTreatment(info.getCancerTreatment());
-		patientHealthDetails.setMedicinesAndDoses(info.getMedicinesAndDoses());
-		patientHealthDetails.setChemotherapyHistory(info.getChemotherapyHistory());
-		patientHealthDetails.setHasCentralCatheter(info.getHasCentralCatheter());
-		patientHealthDetails.setCatheterType(info.getHasCentralCatheter() ? info.getCatheterType() : null);
-		patientHealthDetails.setHeight(info.getHeight());
-		patientHealthDetails.setWeight(info.getWeight());
-		patientHealthDetails.setDateOfBirth(info.getDateOfBirth());
-		patientHealthDetails.setGender(info.getGender());
-		patientHealthDetails.setHealthcareRegion(info.getHealthcareRegion());
-		patientHealthDetails.setPatient(patient); // Associate with the patient
-		patientHealthDetails.calculateDerivedData();
-		patientHealthDetailsRepository.save(patientHealthDetails);
-	}
-
-	public void sendPasswordResetLink(String emailOrPhone) {
-		boolean isEmail = emailOrPhone.contains("@");
-		if (isEmail) {
-			sendPasswordResetLinkByEmail(emailOrPhone);
-		} else {
-			sendPasswordResetLinkByPhone(emailOrPhone);
-		}
-	}
-
-	public void resetPassword(PasswordResetDTO resetDTO) {
-		String token = resetDTO.getToken();
-		String newPassword = resetDTO.getNewPassword();
-		Patient patient = tokenService.validateAndGetPatientByPasswordResetToken(token);
-		patient.setPassword(passwordEncoder.encode(newPassword));
+	@PreAuthorize("#patientId == principal.id")
+	public void updatePatientProfile(Long patientId, PatientProfileDTO patientProfileDTO) {
+		Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+		PatientServiceUtil.updatePatient(patientProfileDTO, patient);
+		PatientHealthDetails patientHealthDetails = PatientServiceUtil.updatePatientHealthDetails(patientProfileDTO, patient);
+		PatientServiceUtil.updateHeightWeightAndBMI(patientProfileDTO, patientHealthDetails);
+		PatientServiceUtil.updateDateOfBirthAndAge(patientProfileDTO, patientHealthDetails);
+		patient.setPatientHealthDetails(patientHealthDetails);
 		patientRepository.save(patient);
 	}
 
-	private void sendPasswordResetLinkByEmail(String email) {
-		Patient patient = patientRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-		String token = tokenService.generatePasswordResetToken(patient);
-		String resetLink = passwordResetRequestUrl + token;
-		emailService.sendEmail(email, "Password reset", resetLink);
-	}
-
-	private void sendPasswordResetLinkByPhone(String phoneNumber) {
-		Patient patient = patientRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-		String token = tokenService.generatePasswordResetToken(patient);
-		String resetLink = passwordResetRequestUrl + token;
-		smsService.sendPasswordResetSms(phoneNumber, resetLink);
+	@Override
+	public void uploadPatientFile(Long patientId, MultipartFile file) {
+		if (!file.getContentType().matches("application/pdf|image/.*")) {
+			throw new IllegalArgumentException("Only PDF or image files are allowed.");
+		}
+		fileStorageService.storeFile(patientId, file);
 	}
 }

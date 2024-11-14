@@ -83,11 +83,21 @@ public class PatientHealthDetails {
 	}
 
 	public void calculateDerivedData() {
+		this.bmi = calculateBMI(this.height, this.weight);
+		this.age = calculateAge(this.dateOfBirth);
+	}
+
+	public Double calculateBMI(Integer height, Integer weight) {
 		if (height != null && weight != null && height > 0) {
-			this.bmi = weight / Math.pow(height / 100.0, 2); // BMI formula in metric system
+			return weight / Math.pow(height / 100.0, 2); // BMI formula in metric system
 		}
+		return this.bmi;
+	}
+
+	public Integer calculateAge(LocalDate dateOfBirth) {
 		if (dateOfBirth != null) {
-			this.age = LocalDate.now().getYear() - dateOfBirth.getYear();
+			return LocalDate.now().getYear() - dateOfBirth.getYear();
 		}
+		return this.age;
 	}
 }

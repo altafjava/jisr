@@ -54,4 +54,9 @@ public class UserDetailsImpl implements UserDetails {
 	public Patient getUser() {
 		return patient;
 	}
+	
+	public Long getId() {
+        return patient.getId();
+    }
+
 }

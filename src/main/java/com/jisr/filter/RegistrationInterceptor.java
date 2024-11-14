@@ -3,7 +3,7 @@ package com.jisr.filter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jisr.dto.PatientDTO;
+import com.jisr.dto.PatientAuthDTO;
 import com.jisr.exception.RegistrationDisabledException; // Add import
 import com.jisr.service.SystemSettingService;
 import com.jisr.service.WaitingQueueService;
@@ -28,7 +28,7 @@ public class RegistrationInterceptor implements HandlerInterceptor {
 				if (requestBody == null || requestBody.isEmpty()) {
 					throw new RegistrationDisabledException("Empty request body");
 				}
-				PatientDTO userDTO = objectMapper.readValue(requestBody, PatientDTO.class);
+				PatientAuthDTO userDTO = objectMapper.readValue(requestBody, PatientAuthDTO.class);
 				String username = userDTO.getUsername();
 				Long positionInQueue = waitingQueueService.getPositionInQueue(username);
 				// If position is null, the user is not in the queue, so add them

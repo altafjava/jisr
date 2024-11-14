@@ -1,18 +1,14 @@
 package com.jisr.service;
 
-import com.jisr.dto.PasswordResetDTO;
-import com.jisr.dto.PatientDTO;
-import com.jisr.dto.PatientHealthDetailsDTO;
-import com.jisr.entity.Patient;
+import org.springframework.web.multipart.MultipartFile;
+import com.jisr.dto.PatientProfileDTO;
 
 public interface PatientService {
 
-	Patient registerUser(PatientDTO userDTO);
+	PatientProfileDTO getPatientProfile(Long patientId);
 
-	void savePatientHealthDetails(Long userId, PatientHealthDetailsDTO patientInitialInfoDTO);
+	void updatePatientProfile(Long patientId, PatientProfileDTO patientProfileDTO);
 
-	void sendPasswordResetLink(String emailOrPhone);
-
-	void resetPassword(PasswordResetDTO resetDTO);
+	void uploadPatientFile(Long patientId, MultipartFile file);
 
 }

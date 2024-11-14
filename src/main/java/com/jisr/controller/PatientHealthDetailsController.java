@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.jisr.dto.PatientHealthDetailsDTO;
-import com.jisr.service.PatientService;
+import com.jisr.service.PatientAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/patients")
 public class PatientHealthDetailsController {
 
-	private final PatientService patientService;
+	private final PatientAuthService patientService;
 
 	@PostMapping("/{patientId}/health-details")
 	public ResponseEntity<?> patientHealthDetails(@PathVariable Long patientId, @Valid @RequestBody PatientHealthDetailsDTO patientHealthDetailsDTO) {

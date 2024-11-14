@@ -8,11 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -116,16 +120,42 @@ public class GlobalExceptionHandler {
 	    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                "JWT token has expired. Please log in again.",
-                null,
-                null
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler({ExpiredJwtException.class, MalformedJwtException.class, SignatureException.class, UnsupportedJwtException.class, IllegalArgumentException.class})
+	public ResponseEntity<ErrorResponse> handleJwtExceptions(RuntimeException ex) {
+	    String message;
+	    if (ex instanceof ExpiredJwtException) {
+	        message = "JWT token has expired. Please log in again.";
+	    } else if (ex instanceof MalformedJwtException) {
+	        message = "JWT token is malformed. Please check the token format.";
+	    } else if (ex instanceof SignatureException) {
+	        message = "JWT token signature is invalid.";
+	    } else if (ex instanceof UnsupportedJwtException) {
+	        message = "JWT token format is not supported.";
+	    } else if (ex instanceof IllegalArgumentException) {
+	        message = "JWT token is invalid.";
+	    } else {
+	        message = "JWT token processing error.";
+	    }
+	    ErrorResponse errorResponse = new ErrorResponse(
+	            HttpStatus.UNAUTHORIZED.value(),
+	            HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+	            message,
+	            null,
+	            null
+	    );
+	    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+	    ErrorResponse errorResponse = new ErrorResponse(
+	            HttpStatus.FORBIDDEN.value(),
+	            HttpStatus.FORBIDDEN.getReasonPhrase(),
+	            "You do not have permission to access this resource.",
+	            null,
+	            null
+	    );
+	    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+	}
 
 }

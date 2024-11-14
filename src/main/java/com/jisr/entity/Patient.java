@@ -36,6 +36,9 @@ public class Patient {
 
 	@Column(name = "last_name", nullable = false, length = 100)
 	private String lastName;
+	
+	@Column(name = "full_name", length = 300)
+	private String fullName;
 
 	@Column(nullable = false, unique = true, length = 100)
 	private String email;

@@ -23,9 +23,14 @@ public class JwtUtil {
 		this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
 	}
 
-	public String generateToken(String username) {
-		return Jwts.builder().subject(username).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + jwtExpirationMs)).signWith(jwtSecret)
-				.compact();
+	public String generateToken(Long patientId, String username) {
+	    return Jwts.builder()
+	               .claim("id", patientId)
+	               .subject(username)
+	               .issuedAt(new Date())
+	               .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+	               .signWith(jwtSecret)
+	               .compact();
 	}
 
 	public boolean validateToken(String token) {
@@ -47,4 +52,9 @@ public class JwtUtil {
 	private JwtParser getJwtParser() {
 		return Jwts.parser().verifyWith(jwtSecret).build();
 	}
+	
+	public Claims getClaimsFromToken(String token) {
+		return getJwtParser().parseSignedClaims(token).getPayload();
+	}
+
 }
