@@ -6,13 +6,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.jisr.dto.HealthProviderActionDTO;
+import com.jisr.dto.SystemSettingRequest;
 import com.jisr.service.HealthcareProviderService;
 import com.jisr.service.SystemSettingService;
-import com.jisr.service.WaitingQueueService;
-import com.jisr.util.Constants;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +21,16 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 
 	private final SystemSettingService systemSettingService;
-	private final WaitingQueueService waitingQueueService;
 	private final HealthcareProviderService providerService;
 
-	@PutMapping("/update-setting")
-	public ResponseEntity<String> updateSetting(@RequestParam String key, @RequestParam String value) {
-		systemSettingService.updateSetting(key, value);
-		if (Constants.REGISTERATION_ENABLED.equalsIgnoreCase(key) && "true".equalsIgnoreCase(value)) {
-			waitingQueueService.notifyQueuedUsersIfEnabled();
+	@PutMapping("/settings")
+	public ResponseEntity<String> updateSetting(@RequestBody SystemSettingRequest systemSettingRequest) {
+		try {
+			systemSettingService.updateSetting(systemSettingRequest);
+			return ResponseEntity.ok("Setting updated successfully");
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
-		return ResponseEntity.ok("Setting updated successfully.");
 	}
 
 	@PostMapping("/provider/action")

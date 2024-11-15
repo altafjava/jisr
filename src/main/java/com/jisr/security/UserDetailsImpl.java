@@ -1,34 +1,37 @@
 package com.jisr.security;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.jisr.entity.Patient;
+import com.jisr.entity.User;
 
 public class UserDetailsImpl implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
-	private final Patient patient;
+	private static final long serialVersionUID = -6995716382982733754L;
 
-	public UserDetailsImpl(Patient user) {
-		this.patient = user;
+	private final User user;
+
+	public UserDetailsImpl(User user) {
+		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority(patient.getRole().name()));
+		return user.getRoles().stream()
+	            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
 	}
 
 	@Override
 	public String getPassword() {
-		return patient.getPassword();
+		return user.getPasswordHash();
 	}
 
 	@Override
 	public String getUsername() {
-		return patient.getUsername(); // Or `user.getEmail()` based on your login strategy
+		return user.getUsername(); // Or `user.getEmail()` based on the login strategy
 	}
 
 	@Override
@@ -51,12 +54,12 @@ public class UserDetailsImpl implements UserDetails {
 		return true;
 	}
 
-	public Patient getUser() {
-		return patient;
+	public User getUser() {
+		return user;
 	}
-	
+
 	public Long getId() {
-        return patient.getId();
-    }
+		return user.getId();
+	}
 
 }

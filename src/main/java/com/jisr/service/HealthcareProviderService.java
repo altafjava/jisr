@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.jisr.constant.HealthProviderStatus;
 import com.jisr.dto.HealthProviderActionDTO;
 import com.jisr.dto.HealthcareProviderSignupRequestDTO;
-import com.jisr.entity.HealthcareProvider;
+import com.jisr.entity.HealthcareProviderOld;
 import com.jisr.repository.HealthcareProviderRepository;
 import com.jisr.util.EmailService;
 import jakarta.mail.MessagingException;
@@ -22,8 +22,8 @@ public class HealthcareProviderService {
 	@Value("${file.upload-dir}")
 	private String uploadDir;
 
-	public HealthcareProvider registerProvider(HealthcareProviderSignupRequestDTO dto) throws IOException {
-		HealthcareProvider provider = new HealthcareProvider();
+	public HealthcareProviderOld registerProvider(HealthcareProviderSignupRequestDTO dto) throws IOException {
+		HealthcareProviderOld provider = new HealthcareProviderOld();
 		String firstName = dto.getFirstName();
 		String fatherName = dto.getFatherName();
 		String lastName = dto.getLastName();
@@ -47,7 +47,7 @@ public class HealthcareProviderService {
 	}
 
 	public void approveProvider(HealthProviderActionDTO healthProviderActionDTO) throws MessagingException {
-		HealthcareProvider provider = repository.findById(healthProviderActionDTO.getId())
+		HealthcareProviderOld provider = repository.findById(healthProviderActionDTO.getId())
 				.orElseThrow(() -> new IllegalArgumentException("Health Provider not found"));
 		healthProviderActionDTO.getAction();
 		HealthProviderStatus status = HealthProviderStatus.fromString(healthProviderActionDTO.getAction());

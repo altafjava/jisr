@@ -1,7 +1,7 @@
 package com.jisr.dto;
 
 import java.time.LocalDate;
-import com.jisr.entity.Role;
+import com.jisr.entity.RoleEnum;
 import com.jisr.validator.PatchValidationGroup;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,7 +38,7 @@ public class PatientProfileDTO {
 	private String relationship;
 
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private RoleEnum role;
 
 	private Boolean firstLogin;
 

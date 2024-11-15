@@ -1,6 +1,7 @@
 package com.jisr.entity;
 
 import java.time.LocalDateTime;
+import com.jisr.entity.core.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,15 +15,17 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Token {
+public class Token extends BaseEntity<Long> {
+
+	private static final long serialVersionUID = -5965289130947414549L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "patient_id", nullable = false)
-	private Patient patient;
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	@Column(nullable = false, unique = true)
 	private String token;

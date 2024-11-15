@@ -1,25 +1,20 @@
 package com.jisr.entity;
 
-import org.springframework.security.core.GrantedAuthority;
+import com.jisr.entity.core.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
-public enum Role implements GrantedAuthority {
-	ADMIN("admin"),
-	PATIENT("patient"),
-	CAREGIVER("caregiver"),
-	HEALTHCARE_PROVIDER("healthcare_provider");
+@Setter
+@Getter
+@Entity
+@Table(name = "roles")
+public class Role extends BaseEntity<Long> {
 
-	private final String roleName;
+	private static final long serialVersionUID = -9218710373017577644L;
 
-	Role(String roleName) {
-		this.roleName = roleName;
-	}
-
-	public String getRoleName() {
-		return roleName;
-	}
-
-	@Override
-	public String getAuthority() {
-		return name();
-	}
+	@Column(name = "name", unique = true, nullable = false)
+	private String name;
 }

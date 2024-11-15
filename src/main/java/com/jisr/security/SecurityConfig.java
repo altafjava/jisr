@@ -2,6 +2,7 @@ package com.jisr.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.jisr.entity.RoleEnum;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -32,8 +34,15 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/api/auth/**", "/api/admin/**")
-            .permitAll()
+            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/refresh-token").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/roles/**").permitAll()
+            .requestMatchers("/demo").permitAll()
+//			.requestMatchers("/dashboard/patient/**").hasRole("ROLE_" + RoleEnum.PATIENT.name())
+//			.requestMatchers("/dashboard/provider/**").hasRole("ROLE_" + RoleEnum.HEALTHCARE_PROVIDER.name())
+//			.requestMatchers("/api/admin/**", "/dashboard/admin/**").hasRole("ROLE_" + RoleEnum.ADMIN.name())
+            .requestMatchers("/dashboard/patient/**").hasRole(RoleEnum.PATIENT.name())
+			.requestMatchers("/dashboard/provider/**").hasRole(RoleEnum.HEALTHCARE_PROVIDER.name())
+			.requestMatchers("/api/admin/**", "/dashboard/admin/**").hasRole(RoleEnum.ADMIN.name())
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

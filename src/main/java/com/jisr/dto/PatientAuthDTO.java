@@ -1,7 +1,7 @@
 package com.jisr.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jisr.entity.Role;
+import com.jisr.entity.RoleEnum;
 import com.jisr.util.RoleDeserializer;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -49,7 +49,7 @@ public class PatientAuthDTO {
 
 	@NotNull(message = "Role is mandatory")
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private RoleEnum role;
 
 	@AssertTrue(message = "Relationship is mandatory for Caregiver role")
 	private boolean isValidRelationship() {
