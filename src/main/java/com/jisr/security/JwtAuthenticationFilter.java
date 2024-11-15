@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtUtil jwtUtil;
+	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
 	@Lazy
 	@Autowired
@@ -37,11 +37,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		String jwt = authHeader.substring(7);
 		try {
-			Claims claims = jwtUtil.getClaimsFromToken(jwt);
+			Claims claims = jwtService.getClaimsFromToken(jwt);
 			String username = claims.getSubject();
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				var userDetails = userDetailsService.loadUserByUsername(username);
-				if (jwtUtil.validateToken(jwt)) {
+				if (jwtService.validateToken(jwt)) {
 					var authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 					authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 					SecurityContextHolder.getContext().setAuthentication(authenticationToken);

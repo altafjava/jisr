@@ -36,10 +36,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(authz -> authz
             .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/refresh-token").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/roles/**").permitAll()
-            .requestMatchers("/demo").permitAll()
-//			.requestMatchers("/dashboard/patient/**").hasRole("ROLE_" + RoleEnum.PATIENT.name())
-//			.requestMatchers("/dashboard/provider/**").hasRole("ROLE_" + RoleEnum.HEALTHCARE_PROVIDER.name())
-//			.requestMatchers("/api/admin/**", "/dashboard/admin/**").hasRole("ROLE_" + RoleEnum.ADMIN.name())
             .requestMatchers("/dashboard/patient/**").hasRole(RoleEnum.PATIENT.name())
 			.requestMatchers("/dashboard/provider/**").hasRole(RoleEnum.HEALTHCARE_PROVIDER.name())
 			.requestMatchers("/api/admin/**", "/dashboard/admin/**").hasRole(RoleEnum.ADMIN.name())

@@ -13,7 +13,7 @@ import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
 import com.jisr.repository.RoleRepository;
 import com.jisr.repository.UserRepository;
-import com.jisr.security.JwtUtil;
+import com.jisr.security.JwtService;
 import com.jisr.service.AuthService;
 import com.jisr.service.SmsService;
 import com.jisr.service.SystemSettingService;
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-	private final JwtUtil jwtUtil;
+	private final JwtService jwtService;
 	private final SmsService smsService;
 	private final EmailService emailService;
 	private final TokenService tokenService;
@@ -106,10 +106,10 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	public String refreshAccessToken(String refreshToken) {
-		if (!jwtUtil.validateToken(refreshToken)) {
+		if (!jwtService.validateToken(refreshToken)) {
 			throw new IllegalArgumentException("Invalid refresh token");
 		}
-		String emailOrPhone = jwtUtil.getSubjectFromToken(refreshToken);
+		String emailOrPhone = jwtService.getSubjectFromToken(refreshToken);
 		boolean isEmail = emailOrPhone.contains("@");
 		User user = null;
 		if (isEmail) {
@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
 		} else {
 			user = userRepository.findByPhoneNumber(emailOrPhone).orElseThrow(() -> new IllegalArgumentException("User not found"));
 		}
-		return jwtUtil.generateAccessToken(user, emailOrPhone);
+		return jwtService.generateAccessToken(user, emailOrPhone);
 	}
 
 	private void sendPasswordResetLinkByEmail(String email) {

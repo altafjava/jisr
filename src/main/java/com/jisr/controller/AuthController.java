@@ -16,7 +16,7 @@ import com.jisr.dto.PasswordResetDTO;
 import com.jisr.dto.RegistrationResponse;
 import com.jisr.dto.SignupDTO;
 import com.jisr.security.JwtResponse;
-import com.jisr.security.JwtUtil;
+import com.jisr.security.JwtService;
 import com.jisr.security.UserDetailsImpl;
 import com.jisr.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-	private final JwtUtil jwtUtil;
+	private final JwtService jwtService;
 	private final AuthService authService;
 	private final AuthenticationManager authenticationManager;
 
@@ -45,8 +45,8 @@ public class AuthController {
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		String accessToken = jwtUtil.generateAccessToken(userDetails.getUser(), emailOrPhone);
-		String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUser(), emailOrPhone);
+		String accessToken = jwtService.generateAccessToken(userDetails.getUser(), emailOrPhone);
+		String refreshToken = jwtService.generateRefreshToken(userDetails.getUser(), emailOrPhone);
 		return ResponseEntity.ok(new JwtResponse(emailOrPhone, accessToken, refreshToken));
 	}
 
@@ -67,7 +67,7 @@ public class AuthController {
 	public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> requestBody) {
 		String refreshToken = requestBody.get("refreshToken");
 		try {
-			String username = jwtUtil.getSubjectFromToken(refreshToken);
+			String username = jwtService.getSubjectFromToken(refreshToken);
 			String newAccessToken = authService.refreshAccessToken(refreshToken);
 			return ResponseEntity.ok(new JwtResponse(username, newAccessToken, refreshToken));
 		} catch (IllegalArgumentException e) {
