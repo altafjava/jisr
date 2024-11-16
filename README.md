@@ -62,18 +62,23 @@ Jisr (جسر) is a healthcare platform designed to connect newly diagnosed cance
    - Redis is required for caching and session management. Follow the instructions below based on your operating system:
 
      1. Install Redis:
-        **For Ubuntu/MacOS**:
+
+        **For Ubuntu:**
+
         ```bash
         sudo apt update
         sudo apt install redis
         ```
-        **For MacOS, you can use Homebrew:**
+
+        **For MacOS:**
+
         ```
         brew install redis
         ```
+
      2. Start the Redis server:
         ```
-        sudo service redis start
+        sudo service redis-server start
         ```
      3. Verify that Redis is running:
         ```
@@ -108,7 +113,9 @@ Jisr (جسر) is a healthcare platform designed to connect newly diagnosed cance
 
      5. Optional: Customize Redis configuration by editing the `redis.conf` file (e.g., change the default port or enable persistence).
 
-4. Update Configuration:
+4. Install Apache Kafka with the default port `9092` for event-driven messaging.
+
+5. Update Configuration:
 
    - Create `application-secret.properties` file inside `src/main/resources` directory and update the following settings:
 
@@ -124,15 +131,15 @@ Jisr (جسر) is a healthcare platform designed to connect newly diagnosed cance
      ADMIN_PASSWORD_HASH=<Bcrypt encrypted password>
      ```
 
-5. Install dependencies and build the project:
+6. Install dependencies and build the project:
    ```
    mvn clean install
    ```
-6. Run the application:
+7. Run the application:
    ```
    mvn spring-boot:run
    ```
-7. Access the application:
+8. Access the application:
    - API documentation: http://localhost:8080/swagger-ui.html (if Swagger is configured).
    - Base URL: http://localhost:8080
 

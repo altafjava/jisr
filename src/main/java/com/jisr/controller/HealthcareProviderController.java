@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth/health-provider")
+@RequestMapping("/auth/health-provider")
 @RequiredArgsConstructor
 public class HealthcareProviderController {
 

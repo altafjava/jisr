@@ -13,7 +13,7 @@
 //
 //@RestController
 //@RequiredArgsConstructor
-//@RequestMapping("/api/patients")
+//@RequestMapping("/patients")
 //public class PatientHealthDetailsController {
 //
 //	private final PatientAuthService patientService;

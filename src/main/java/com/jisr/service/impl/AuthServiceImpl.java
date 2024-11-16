@@ -3,6 +3,7 @@ package com.jisr.service.impl;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.jisr.dto.PasswordResetDTO;
@@ -11,6 +12,7 @@ import com.jisr.dto.SignupDTO;
 import com.jisr.entity.Role;
 import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
+import com.jisr.event.ForgotPasswordEvent;
 import com.jisr.repository.RoleRepository;
 import com.jisr.repository.UserRepository;
 import com.jisr.security.JwtService;
@@ -18,7 +20,6 @@ import com.jisr.service.AuthService;
 import com.jisr.service.SmsService;
 import com.jisr.service.SystemSettingService;
 import com.jisr.service.TokenService;
-import com.jisr.util.EmailService;
 import com.jisr.util.UserServiceUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -28,12 +29,12 @@ public class AuthServiceImpl implements AuthService {
 
 	private final JwtService jwtService;
 	private final SmsService smsService;
-	private final EmailService emailService;
 	private final TokenService tokenService;
 	private final RoleRepository roleRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final SystemSettingService globalSettingsService;
+	private final ApplicationEventPublisher applicationEventPublisher;
 	@Value("${password-reset-request}")
 	private String passwordResetRequestUrl;
 
@@ -124,7 +125,8 @@ public class AuthServiceImpl implements AuthService {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 		String token = tokenService.generatePasswordResetToken(user);
 		String resetLink = passwordResetRequestUrl + token;
-		emailService.sendEmail(email, "Password reset", resetLink);
+		ForgotPasswordEvent forgotPasswordEvent=new ForgotPasswordEvent(this, user, resetLink);
+		applicationEventPublisher.publishEvent(forgotPasswordEvent);
 	}
 
 	private void sendPasswordResetLinkByPhone(String phoneNumber) {

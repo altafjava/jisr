@@ -21,7 +21,7 @@
 //import lombok.RequiredArgsConstructor;
 //
 //@RestController
-//@RequestMapping("/api/auth/patients")
+//@RequestMapping("/auth/patients")
 //@RequiredArgsConstructor
 //public class PatientAuthController {
 //

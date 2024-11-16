@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.jisr.constant.AppConstant;
 import com.jisr.entity.RoleEnum;
 import lombok.RequiredArgsConstructor;
 
@@ -24,25 +25,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-	
+
+	private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	http
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    	httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/refresh-token").permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/roles/**").permitAll()
-            .requestMatchers("/dashboard/patient/**").hasRole(RoleEnum.PATIENT.name())
-			.requestMatchers("/dashboard/provider/**").hasRole(RoleEnum.HEALTHCARE_PROVIDER.name())
-			.requestMatchers("/api/admin/**", "/dashboard/admin/**").hasRole(RoleEnum.ADMIN.name())
+            .requestMatchers(AppConstant.API_AUTH).permitAll()
+            .requestMatchers(HttpMethod.GET, AppConstant.API_ROLES).permitAll()
+            .requestMatchers(AppConstant.DASHBOARD_PATIENT).hasRole(RoleEnum.PATIENT.name())
+			.requestMatchers(AppConstant.DASHBOARD_PROVIDER).hasRole(RoleEnum.HEALTHCARE_PROVIDER.name())
+			.requestMatchers(AppConstant.API_ADMIN, AppConstant.DASHBOARD_ADMIN).hasRole(RoleEnum.ADMIN.name())
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+        return httpSecurity.build();
     }
 
     @Bean

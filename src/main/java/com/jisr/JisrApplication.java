@@ -12,7 +12,7 @@ public class JisrApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JisrApplication.class, args);
-		log.info("------------- APPLICATION STARTED -------------");
+		log.info("============== APPLICATION STARTED ==============");
 	}
 
 }

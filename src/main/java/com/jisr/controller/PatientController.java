@@ -17,7 +17,7 @@ import com.jisr.validator.PatchValidationGroup;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("/patients")
 @RequiredArgsConstructor
 public class PatientController {
 

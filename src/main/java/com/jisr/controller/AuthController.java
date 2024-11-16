@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -50,14 +50,14 @@ public class AuthController {
 		return ResponseEntity.ok(new JwtResponse(emailOrPhone, accessToken, refreshToken));
 	}
 
-	@PostMapping("/password-reset/request")
+	@PostMapping("/forgot-password")
 	public ResponseEntity<?> requestPasswordReset(@RequestBody Map<String, String> request) {
 		String emailOrPhone = request.get("emailOrPhone");
 		authService.sendPasswordResetLink(emailOrPhone);
 		return ResponseEntity.ok("Password reset link has been sent.");
 	}
 
-	@PostMapping("/password-reset")
+	@PostMapping("/reset-password")
 	public ResponseEntity<?> resetPassword(@RequestBody PasswordResetDTO resetDTO) {
 		authService.resetPassword(resetDTO);
 		return ResponseEntity.ok("Password has been reset successfully.");
