@@ -1,55 +1,50 @@
 package com.jisr.service;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
-import com.jisr.repository.UserRepository;
-import com.jisr.util.EmailService;
+import com.jisr.model.EmailNotification;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Kafka Producer
+ */
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final UserRepository userRepository;
-    private final EmailService emailService;
+	private final UserActivationService userActivationService;
+	private final KafkaTemplate<String, EmailNotification> kafkaTemplate;
+	private static final String EMAIL_NOTIFICATION_TOPIC = "email-notification-topic";
 
-    @Transactional
-    public void notifyPatientsAndCaregivers() {
-        List<String> roleNames = EnumSet.of(RoleEnum.PATIENT, RoleEnum.CAREGIVER).stream()
-                                        .map(RoleEnum::getRoleName)
-                                        .collect(Collectors.toList());
-        notifyAndActivateUsers(roleNames);
-    }
+	public void notifyPatientsAndCaregivers() {
+		List<String> roleNames = List.of(RoleEnum.PATIENT.getRoleName(), RoleEnum.CAREGIVER.getRoleName());
+		notifyUsers(roleNames);
+	}
 
-    @Transactional
-    public void notifyPatients() {
-        List<String> roleNames = EnumSet.of(RoleEnum.PATIENT).stream()
-                                        .map(RoleEnum::getRoleName)
-                                        .collect(Collectors.toList());
-        notifyAndActivateUsers(roleNames);
-    }
+	public void notifyPatients() {
+		List<String> roleNames = List.of(RoleEnum.PATIENT.getRoleName());
+		notifyUsers(roleNames);
+	}
 
-    @Transactional
-    public void notifyHealthcareProviders() {
-        List<String> roleNames = EnumSet.of(RoleEnum.HEALTHCARE_PROVIDER).stream()
-                                        .map(RoleEnum::getRoleName)
-                                        .collect(Collectors.toList());
-        notifyAndActivateUsers(roleNames);
-    }
-    
-    private void notifyAndActivateUsers(List<String> roleNames) {
-        List<User> inactiveUsers = userRepository.findInactiveUsersByRoles(roleNames);
-        String subject = "Your Registration is Now Open!";
-        for (User user : inactiveUsers) {
-            user.setIsActive(true);
-            userRepository.save(user);
-            String body = "Hello " + user.getUsername() + ",\n\nYour registration has been successfully activated. You can now login to your account.";
-            emailService.sendEmail(user.getEmail(), subject, body);
-        }
-    }
+	public void notifyHealthcareProviders() {
+		List<String> roleNames = List.of(RoleEnum.HEALTHCARE_PROVIDER.getRoleName());
+		notifyUsers(roleNames);
+	}
+
+	private void notifyUsers(List<String> roleNames) {
+		List<User> usersToNotify = userActivationService.activateUsersByRoles(roleNames);
+		String subject = "Your Registration is Now Open!";
+		for (User user : usersToNotify) {
+			String body = "Hello " + user.getUsername() + ",\n\nYour registration has been successfully activated. You can now login to your account.";
+			EmailNotification emailNotification = new EmailNotification(user.getEmail(), subject, body);
+			sendEmailNotificationToKafka(emailNotification);
+		}
+	}
+
+	private void sendEmailNotificationToKafka(EmailNotification emailNotification) {
+		kafkaTemplate.send(EMAIL_NOTIFICATION_TOPIC, emailNotification);
+	}
 }
