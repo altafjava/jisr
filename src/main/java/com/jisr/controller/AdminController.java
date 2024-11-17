@@ -2,17 +2,12 @@ package com.jisr.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.jisr.dto.HealthProviderActionDTO;
 import com.jisr.dto.SystemSettingRequest;
-import com.jisr.service.HealthcareProviderService;
 import com.jisr.service.SystemSettingService;
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 
 	private final SystemSettingService systemSettingService;
-	private final HealthcareProviderService providerService;
+//	private final HealthcareProviderService providerService;
 
 	@PutMapping("/settings")
 	public ResponseEntity<String> updateSetting(@RequestBody SystemSettingRequest systemSettingRequest) {
@@ -33,13 +28,13 @@ public class AdminController {
 		}
 	}
 
-	@PostMapping("/provider/action")
-	public ResponseEntity<?> doAction(@RequestBody @Valid HealthProviderActionDTO healthProviderActionDTO) {
-		try {
-			providerService.approveProvider(healthProviderActionDTO);
-			return ResponseEntity.ok("Provider approved.");
-		} catch (MessagingException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
-		}
-	}
+//	@PostMapping("/provider/action")
+//	public ResponseEntity<?> doAction(@RequestBody @Valid HealthProviderActionDTO healthProviderActionDTO) {
+//		try {
+//			providerService.approveProvider(healthProviderActionDTO);
+//			return ResponseEntity.ok("Provider approved.");
+//		} catch (MessagingException e) {
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
+//		}
+//	}
 }

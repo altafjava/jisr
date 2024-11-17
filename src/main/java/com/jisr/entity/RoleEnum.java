@@ -1,22 +1,23 @@
 package com.jisr.entity;
 
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
+import lombok.Getter;
 
+@Getter
 public enum RoleEnum implements GrantedAuthority {
-	ADMIN("ADMIN"),
-	PATIENT("PATIENT"),
-	CAREGIVER("CAREGIVER"),
-	HEALTHCARE_PROVIDER("HEALTHCARE_PROVIDER");
+	ADMIN("ADMIN", List.of(User.class.getSimpleName())),
+	PATIENT("PATIENT", List.of(User.class.getSimpleName(), PatientProfile.class.getSimpleName())),
+	CAREGIVER("CAREGIVER", List.of(User.class.getSimpleName(), PatientProfile.class.getSimpleName())),
+	HEALTHCARE_PROVIDER("HEALTHCARE_PROVIDER", List.of(User.class.getSimpleName(), HealthcareProvider.class.getSimpleName()));
 
 	private final String roleName;
+	private final List<String> entityNames;
 
-	RoleEnum(String roleName) {
+	RoleEnum(String roleName, List<String> entityNames) {
 		this.roleName = roleName;
-	}
-
-	public String getRoleName() {
-		return roleName;
+		this.entityNames = entityNames;
 	}
 
 	public static RoleEnum fromString(String role) {
@@ -28,4 +29,5 @@ public enum RoleEnum implements GrantedAuthority {
 	public String getAuthority() {
 		return name();
 	}
+
 }

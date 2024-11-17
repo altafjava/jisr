@@ -8,6 +8,8 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     phone_number VARCHAR(15) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    user_type VARCHAR(50) NOT NULL,
+    profile_completion INT DEFAULT 0,
     is_active BOOLEAN DEFAULT FALSE,
     created_by VARCHAR(255),
     updated_by VARCHAR(255),
@@ -24,8 +26,8 @@ CREATE TABLE user_roles (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (username, first_name, last_name, full_name, email, phone_number, password_hash, is_active, created_by, updated_by, created_date, updated_date)
-VALUES ('admin', 'Super', 'User', 'Super User', 'superuser@admin.com', '1234567890', '${ADMIN_PASSWORD_HASH}', true, 'system_admin', 'system_admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (username, first_name, last_name, full_name, email, phone_number, password_hash, user_type, is_active, created_by, updated_by, created_date, updated_date)
+VALUES ('admin', 'Super', 'User', 'Super User', 'superuser@admin.com', '1234567890', '${ADMIN_PASSWORD_HASH}', 'ADMIN', true, 'system_admin', 'system_admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES

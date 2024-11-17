@@ -5,6 +5,8 @@ import java.util.Set;
 import com.jisr.entity.core.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -48,7 +50,16 @@ public class User extends AuditableEntity<Long> {
 	@Column(name = "password_hash", length = 255, nullable = false)
 	private String passwordHash;
 
+	@Column(name = "user_type", length = 50, nullable = false)
+	@Enumerated(EnumType.STRING)
+	private RoleEnum userType;
+	
+	@Column(name = "profile_completion")
+	private int profileCompletion;
+	
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = false;
+	
+	
 
 }

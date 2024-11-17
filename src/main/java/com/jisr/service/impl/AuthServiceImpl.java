@@ -58,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
 		roles.add(role);
 		user.setRoles(roles);
 		RoleEnum userRole = RoleEnum.fromString(role.getName());
+		user.setUserType(userRole);
 
 		boolean isGeneralRegistrationEnabled = globalSettingsService.isGeneralRegistrationEnabled();
 		boolean isPatientRegistrationEnabled = globalSettingsService.isPatientRegistrationEnabled();

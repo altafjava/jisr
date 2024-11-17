@@ -20,8 +20,8 @@ public class PatientProfile extends AuditableEntity<Long> {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
-	@JoinColumn(name = "patient_id", referencedColumnName = "id")
-	private User patient;
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User user;
 
 	@Column(name = "relationship", length = 100)
 	private String relationship;
