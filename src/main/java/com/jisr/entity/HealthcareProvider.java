@@ -1,11 +1,14 @@
 package com.jisr.entity;
 
 import java.time.LocalDate;
+import com.jisr.constant.ProviderStatus;
 import com.jisr.entity.core.AuditableEntity;
+import com.jisr.validator.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -23,6 +26,13 @@ public class HealthcareProvider extends AuditableEntity<Long> {
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 
+	@Column(name = "gender", length = 10)
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
+
+	@Column(name = "date_of_birth")
+	private LocalDate dateOfBirth;
+
 	@Column(name = "specialization", length = 100)
 	private String specialization;
 
@@ -32,17 +42,16 @@ public class HealthcareProvider extends AuditableEntity<Long> {
 	@Column(name = "experience")
 	private Integer experience;
 
-	@Column(name = "gender", length = 10)
-	private String gender;
+	@Column(name = "no_of_medical_licenses")
+	private Integer noOfMedicalLicenses;
 
-	@Column(name = "date_of_birth")
-	private LocalDate dateOfBirth;
+	@Column(name = "personal_photo_url")
+	private String personalPhotoUrl;
 
-	@Lob
-	@Column(name = "personal_photo")
-	private byte[] personalPhoto;
+	@Column(name = "cv_url")
+	private String cvUrl;
+	
+	@Enumerated(EnumType.STRING)
+	private ProviderStatus status;
 
-	@Lob
-	@Column(name = "cv")
-	private byte[] cv;
 }

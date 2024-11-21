@@ -1,7 +1,9 @@
 package com.jisr.exception;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,10 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -56,13 +60,6 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-				"Invalid username or password. Please try again.", null, null);
-		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-	}
-
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		Map<String, String> validationErrors = new HashMap<>();
@@ -71,6 +68,25 @@ public class GlobalExceptionHandler {
 		}
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(),
 				"Validation failed for one or more fields", validationErrors, null);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+		String message;
+		if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+			Object[] enumConstants = ex.getRequiredType().getEnumConstants();
+			String allowedValues = Arrays.stream(enumConstants).map(Object::toString).collect(Collectors.joining(", "));
+			message = "Invalid value for parameter '" + ex.getName() + "'. Allowed values are: [" + allowedValues + "]";
+		} else {
+			message = "Invalid parameter: " + ex.getName();
+		}
+		ErrorResponse errorResponse = new ErrorResponse(
+				HttpStatus.BAD_REQUEST.value(),
+				HttpStatus.BAD_REQUEST.getReasonPhrase(),
+				message,
+				null,
+				null);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
@@ -102,6 +118,19 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(ProfileNotCompletedException.class)
+	public ResponseEntity<ErrorResponse> handleTokenNotValidException(ProfileNotCompletedException ex) {
+		Map<String, String> details = new HashMap<>();
+		details.put("completedProfilePercentage", ex.getUser().getProfileCompletion().toString());
+		ErrorResponse errorResponse = new ErrorResponse(
+				HttpStatus.BAD_REQUEST.value(),
+				HttpStatus.BAD_REQUEST.getReasonPhrase(),
+				ex.getMessage(),
+				details,
+				null);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler({ ExpiredJwtException.class, MalformedJwtException.class, SignatureException.class, UnsupportedJwtException.class })
 	public ResponseEntity<ErrorResponse> handleJwtExceptions(RuntimeException ex) {
 		String message;
@@ -117,6 +146,24 @@ public class GlobalExceptionHandler {
 			message = "JWT token processing error.";
 		}
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(), message, null, null);
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(
+				HttpStatus.NOT_FOUND.value(),
+				HttpStatus.NOT_FOUND.getReasonPhrase(),
+				"User not found. Please sign up to access the system.",
+				Map.of("username", ex.getMessage()),
+				null);
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+				"Invalid username or password. Please try again.", null, null);
 		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
 	}
 

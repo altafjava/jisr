@@ -26,8 +26,8 @@ CREATE TABLE user_roles (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-INSERT INTO users (username, first_name, last_name, full_name, email, phone_number, password_hash, user_type, is_active, created_by, updated_by, created_date, updated_date)
-VALUES ('admin', 'Super', 'User', 'Super User', 'superuser@admin.com', '1234567890', '${ADMIN_PASSWORD_HASH}', 'ADMIN', true, 'system_admin', 'system_admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (username, first_name, last_name, full_name, email, phone_number, password_hash, user_type, profile_completion, is_active, created_by, updated_by, created_date, updated_date)
+VALUES ('admin', 'Super', 'User', 'Super User', 'superuser@admin.com', '1234567890', '${ADMIN_PASSWORD_HASH}', 'ADMIN', 30, true, 'system_admin', 'system_admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES

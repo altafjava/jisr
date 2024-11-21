@@ -3,7 +3,6 @@ package com.jisr.service.impl;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.jisr.dto.PasswordResetDTO;
@@ -13,6 +12,8 @@ import com.jisr.entity.Role;
 import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
 import com.jisr.event.ForgotPasswordEvent;
+import com.jisr.event.ProfileCompletionEvent;
+import com.jisr.event.TransactionalEventPublisher;
 import com.jisr.repository.RoleRepository;
 import com.jisr.repository.UserRepository;
 import com.jisr.security.JwtService;
@@ -34,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final SystemSettingService globalSettingsService;
-	private final ApplicationEventPublisher applicationEventPublisher;
+	private final TransactionalEventPublisher transactionalEventPublisher;
 	@Value("${password-reset-request}")
 	private String passwordResetRequestUrl;
 
@@ -83,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
 			long position = getQueuePosition(savedUser);
 			message += " Your position in the waiting queue is #" + position + ".";
 		}
+		transactionalEventPublisher.publishEventAfterCommit(ProfileCompletionEvent.forUser(this, savedUser.getId()));
 		return new RegistrationResponse(savedUser.getIsActive(), message);
 	}
 
@@ -126,8 +128,8 @@ public class AuthServiceImpl implements AuthService {
 		User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
 		String token = tokenService.generatePasswordResetToken(user);
 		String resetLink = passwordResetRequestUrl + token;
-		ForgotPasswordEvent forgotPasswordEvent=new ForgotPasswordEvent(this, user, resetLink);
-		applicationEventPublisher.publishEvent(forgotPasswordEvent);
+		ForgotPasswordEvent forgotPasswordEvent = new ForgotPasswordEvent(this, user, resetLink);
+		transactionalEventPublisher.publishEventAfterCommit(forgotPasswordEvent);
 	}
 
 	private void sendPasswordResetLinkByPhone(String phoneNumber) {

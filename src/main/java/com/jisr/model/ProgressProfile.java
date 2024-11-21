@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Builder
-public class ProfileCompletion {
+public class ProgressProfile {
 	private String userType;
 	private int completionPercentage;
 	private int totalWeight;

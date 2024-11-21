@@ -12,11 +12,9 @@ import com.jisr.entity.ProfileFieldWeight;
 import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
 import com.jisr.model.CompletedField;
-import com.jisr.model.ProfileCompletion;
+import com.jisr.model.ProgressProfile;
 import com.jisr.model.RemainingField;
 import com.jisr.repository.ProfileFieldWeightRepository;
-import com.jisr.resolver.ProfileResolver;
-import com.jisr.resolver.ProfileResolverFactory;
 import com.jisr.util.CaseUtils;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -26,14 +24,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProfileCompletionService {
 
-	private final ProfileResolverFactory profileResolverFactory;
 	private final ProfileFieldWeightRepository profileFieldWeightRepository;
 
-	public ProfileCompletion calculateProfileCompletion(User user) {
+	public ProgressProfile calculateProfileCompletion(User user, Optional<?> profileOptional) {
 		RoleEnum roleEnum = user.getUserType();
 		List<String> entityNames = roleEnum.getEntityNames();
-		ProfileResolver resolver = profileResolverFactory.getResolver(roleEnum);
-		Optional<Object> profileOptional = resolver.resolveProfile(user.getId());
 		Map<String, Object> fieldValues = null;
 		if (profileOptional.isEmpty()) {
 			fieldValues = extractFieldValues(user);
@@ -71,7 +66,7 @@ public class ProfileCompletionService {
 		}
 	}
 
-	private ProfileCompletion calculateCompletionPercentage(Map<String, Object> fieldValues, List<ProfileFieldWeight> profileFieldWeights, String userType) {
+	private ProgressProfile calculateCompletionPercentage(Map<String, Object> fieldValues, List<ProfileFieldWeight> profileFieldWeights, String userType) {
 		int totalWeight = 0;
 		int completedWeight = 0;
 		int remainingWeight = 0;
@@ -90,7 +85,7 @@ public class ProfileCompletionService {
 			}
 		}
 		int completionPercentage = totalWeight == 0 ? 0 : (completedWeight * 100) / totalWeight;
-		ProfileCompletion profileCompletion = ProfileCompletion.builder().userType(userType).completionPercentage(completionPercentage).totalWeight(totalWeight)
+		ProgressProfile profileCompletion = ProgressProfile.builder().userType(userType).completionPercentage(completionPercentage).totalWeight(totalWeight)
 				.completedWeight(completedWeight).remainingWeight(remainingWeight).completedFields(completedFields).remainingFields(remainingFields).build();
 		return profileCompletion;
 	}

@@ -1,5 +1,6 @@
 package com.jisr.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
@@ -11,7 +12,7 @@ import com.jisr.constant.SystemSettingConstant;
 import com.jisr.dto.SystemSettingRequest;
 import com.jisr.entity.SystemSetting;
 import com.jisr.event.SystemSettingChangedEvent;
-import com.jisr.repository.GlobalSettingRepository;
+import com.jisr.repository.SystemSettingRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
@@ -19,12 +20,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SystemSettingService {
 
-	private final GlobalSettingRepository globalSettingRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
+	private final SystemSettingRepository systemSettingRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	@Cacheable("systemSettings")
 	public Map<String, SystemSetting> getAllSettings() {
-		return globalSettingRepository.findAll().stream().collect(Collectors.toMap(SystemSetting::getName, setting -> setting));
+		return systemSettingRepository.findAll().stream().collect(Collectors.toMap(SystemSetting::getName, setting -> setting));
 	}
 
 	@PostConstruct
@@ -35,16 +36,16 @@ public class SystemSettingService {
 	@Transactional
 	@CacheEvict(value = "systemSettings", allEntries = true)
 	public void updateSetting(SystemSettingRequest systemSettingRequest) {
-        SystemSetting systemSetting = globalSettingRepository.findByName(systemSettingRequest.getName())
-                .orElseThrow(() -> new IllegalArgumentException("Setting not found: " + systemSettingRequest.getName()));
-        systemSetting.setValue(systemSettingRequest.getValue());
-        systemSetting.setEnabled(systemSettingRequest.isEnabled());
-        systemSetting.setDisplayName(systemSettingRequest.getDisplayName());
-        systemSetting.setDescription(systemSettingRequest.getDescription());
-        globalSettingRepository.save(systemSetting);
-        SystemSettingChangedEvent event = new SystemSettingChangedEvent(this, systemSetting);
-        applicationEventPublisher.publishEvent(event);
-    }
+		SystemSetting systemSetting = systemSettingRepository.findByName(systemSettingRequest.getName())
+				.orElseThrow(() -> new IllegalArgumentException("Setting not found: " + systemSettingRequest.getName()));
+		systemSetting.setValue(systemSettingRequest.getValue());
+		systemSetting.setEnabled(systemSettingRequest.isEnabled());
+		systemSetting.setDisplayName(systemSettingRequest.getDisplayName());
+		systemSetting.setDescription(systemSettingRequest.getDescription());
+		systemSettingRepository.save(systemSetting);
+		SystemSettingChangedEvent event = new SystemSettingChangedEvent(this, systemSetting);
+		applicationEventPublisher.publishEvent(event);
+	}
 
 	public SystemSetting getSetting(String name) {
 		return getAllSettings().get(name);
@@ -64,5 +65,9 @@ public class SystemSettingService {
 
 	public boolean isFileUploadEnabled() {
 		return getSetting(SystemSettingConstant.FILE_UPLOAD_ENABLED).isEnabled();
+	}
+
+	public List<SystemSetting> findAllSystemSettings() {
+		return systemSettingRepository.findAll();
 	}
 }

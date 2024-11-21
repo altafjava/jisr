@@ -1,7 +1,7 @@
 package com.jisr.entity;
 
 import java.time.LocalDate;
-import com.jisr.constant.HealthProviderStatus;
+import com.jisr.constant.ProviderStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -59,6 +59,6 @@ public class HealthcareProviderOld {
 	private Integer noOfMedicalLicenses;
 
 	@Enumerated(EnumType.STRING)
-	private HealthProviderStatus status;
+	private ProviderStatus status;
 
 }

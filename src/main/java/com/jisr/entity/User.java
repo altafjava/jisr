@@ -53,13 +53,11 @@ public class User extends AuditableEntity<Long> {
 	@Column(name = "user_type", length = 50, nullable = false)
 	@Enumerated(EnumType.STRING)
 	private RoleEnum userType;
-	
+
 	@Column(name = "profile_completion")
-	private int profileCompletion;
-	
+	private Integer profileCompletion;
+
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = false;
-	
-	
 
 }

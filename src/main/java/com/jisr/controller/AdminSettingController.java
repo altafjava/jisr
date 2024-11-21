@@ -1,24 +1,34 @@
 package com.jisr.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.jisr.dto.SystemSettingRequest;
+import com.jisr.entity.SystemSetting;
 import com.jisr.service.SystemSettingService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin")
-public class AdminController {
+@RequestMapping("/admins/settings")
+public class AdminSettingController {
 
 	private final SystemSettingService systemSettingService;
-//	private final HealthcareProviderService providerService;
 
-	@PutMapping("/settings")
+	@GetMapping
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<SystemSetting> getAllSystemSettings(){
+		return systemSettingService.findAllSystemSettings();
+	}
+	
+	@PutMapping
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<String> updateSetting(@RequestBody SystemSettingRequest systemSettingRequest) {
 		try {
 			systemSettingService.updateSetting(systemSettingRequest);
@@ -28,13 +38,4 @@ public class AdminController {
 		}
 	}
 
-//	@PostMapping("/provider/action")
-//	public ResponseEntity<?> doAction(@RequestBody @Valid HealthProviderActionDTO healthProviderActionDTO) {
-//		try {
-//			providerService.approveProvider(healthProviderActionDTO);
-//			return ResponseEntity.ok("Provider approved.");
-//		} catch (MessagingException e) {
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
-//		}
-//	}
 }

@@ -8,7 +8,6 @@ public interface AuthService {
 
 	RegistrationResponse registerUser(SignupDTO signupDTO);
 
-//	void savePatientHealthDetails(Long userId, PatientHealthDetailsDTO patientInitialInfoDTO);
 	void sendPasswordResetLink(String emailOrPhone);
 
 	void resetPassword(PasswordResetDTO resetDTO);

@@ -3,6 +3,8 @@ package com.jisr.service;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import com.jisr.constant.ProviderStatus;
+import com.jisr.entity.HealthcareProvider;
 import com.jisr.entity.RoleEnum;
 import com.jisr.entity.User;
 import com.jisr.kafka.constant.Topics;
@@ -19,6 +21,14 @@ public class NotificationService {
 
 	private final KafkaService kafkaService;
 	private final UserActivationService userActivationService;
+
+	public void notifyHealthcareProviderAccountStatus(HealthcareProvider provider, ProviderStatus status) {
+		User user = provider.getUser();
+		String subject = "Account Status";
+		String body = "Hello " + user.getUsername() + ",\n\nYour account has been " + status;
+		EmailNotification emailNotification = new EmailNotification(user.getEmail(), subject, body);
+		kafkaService.sendMessage(emailNotification, UUID.randomUUID().toString(), Topics.EMAIL_NOTIFICATION);
+	}
 
 	public void notifyPatientsAndCaregivers() {
 		List<String> roleNames = List.of(RoleEnum.PATIENT.getRoleName(), RoleEnum.CAREGIVER.getRoleName());

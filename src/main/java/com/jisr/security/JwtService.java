@@ -18,8 +18,8 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtService {
 
-	private static final String TOKEN_TYPE_ACCESS = "access";
-	private static final String TOKEN_TYPE_REFRESH = "refresh";
+	private static final String TOKEN_TYPE_ACCESS = "access_token";
+	private static final String TOKEN_TYPE_REFRESH = "refresh_token";
 	private static final String JWT_TYPE = "JWT";
 	private final SecretKey secretKey;
 	

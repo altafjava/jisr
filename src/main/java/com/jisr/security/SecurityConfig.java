@@ -27,40 +27,39 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-    	httpSecurity
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(authz -> authz
-            .requestMatchers(AppConstant.API_AUTH).permitAll()
-            .requestMatchers(HttpMethod.GET, AppConstant.API_ROLES).permitAll()
-            .requestMatchers(AppConstant.DASHBOARD_PATIENT).hasRole(RoleEnum.PATIENT.name())
-			.requestMatchers(AppConstant.DASHBOARD_PROVIDER).hasRole(RoleEnum.HEALTHCARE_PROVIDER.name())
-			.requestMatchers(AppConstant.API_ADMIN, AppConstant.DASHBOARD_ADMIN).hasRole(RoleEnum.ADMIN.name())
-            .anyRequest().authenticated()
-        )
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
-    }
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(authz -> authz
+						.requestMatchers(AppConstant.API_AUTH).permitAll()
+						.requestMatchers(HttpMethod.GET, AppConstant.API_ROLES).permitAll()
+						.requestMatchers(AppConstant.PATIENTS).hasAnyRole(RoleEnum.PATIENT.name(), RoleEnum.CAREGIVER.name(), RoleEnum.ADMIN.name())
+						.requestMatchers(AppConstant.HEALTHCARE_PROVIDERS).hasAnyRole(RoleEnum.HEALTHCARE_PROVIDER.name(), RoleEnum.ADMIN.name())
+						.requestMatchers(AppConstant.ADMINS).hasRole(RoleEnum.ADMIN.name())
+						.anyRequest().authenticated())
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		return httpSecurity.build();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-    
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder());
+		return authProvider;
+	}
 }

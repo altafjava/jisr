@@ -1,16 +1,17 @@
 package com.jisr.constant;
 
-public enum HealthProviderStatus {
+public enum ProviderStatus {
+	DRAFTED,
 	PENDING,
 	APPROVED,
 	REJECTED;
 
-	public static HealthProviderStatus fromString(String status) {
+	public static ProviderStatus fromString(String status) {
 		if (status == null) {
 			return null;
 		}
 		try {
-			return HealthProviderStatus.valueOf(status.toUpperCase());
+			return ProviderStatus.valueOf(status.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
