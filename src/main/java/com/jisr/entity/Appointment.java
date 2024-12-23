@@ -1,5 +1,6 @@
 package com.jisr.entity;
 
+import java.time.LocalDateTime;
 import com.jisr.entity.core.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +31,7 @@ public class Appointment extends AuditableEntity<Long> {
 	private AppointmentStatus appointmentStatus;
 
 	@Column(name = "appointment_time", nullable = false)
-	private java.time.LocalDateTime appointmentTime;
+	private LocalDateTime appointmentTime;
 
 	@Column(name = "reason_for_visit")
 	private String reasonForVisit;

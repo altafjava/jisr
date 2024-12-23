@@ -26,7 +26,4 @@ public class ProfileFieldWeight {
 	@Column(name = "weight", nullable = false)
 	private Integer weight;
 	
-//	@Column(name = "user_type", nullable = false)
-//    private String userType;
-
 }
