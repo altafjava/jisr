@@ -4,14 +4,15 @@ import lombok.Data;
 
 @Data
 public class JwtResponse {
-
-	private String token;
+	private final String tokenType = "Bearer";
 	private String username;
-	private final String type = "Bearer";
+	private String accessToken;
+	private String refreshToken;
 
-	public JwtResponse(String username, String token) {
+	public JwtResponse(String username, String accessToken, String refreshToken) {
 		this.username = username;
-		this.token = token;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 	}
 
 }

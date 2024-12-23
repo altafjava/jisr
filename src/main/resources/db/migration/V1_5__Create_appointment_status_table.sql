@@ -1,0 +1,9 @@
+CREATE TABLE appointment_status (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    created_by VARCHAR(255),
+    updated_by VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    version INT NOT NULL DEFAULT 0
+);

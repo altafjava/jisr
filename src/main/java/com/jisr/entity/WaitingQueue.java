@@ -45,7 +45,7 @@ public class WaitingQueue {
 
 	@Enumerated(EnumType.STRING) // Store enum as string in the database
 	@Column(nullable = false)
-	private Role role;
+	private RoleEnum role;
 
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();

@@ -1,27 +1,33 @@
 package com.jisr.entity;
 
+import com.jisr.entity.core.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "system_settings")
-@Setter
-@Getter
-public class SystemSetting {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class SystemSetting extends AuditableEntity<Long> {
 
-	@Column(name = "setting_key", unique = true, nullable = false)
-	private String key;
+	private static final long serialVersionUID = -2198384933057565053L;
 
-	@Column(name = "setting_value", nullable = false)
+	@Column(name = "name", length = 100, unique = true, nullable = false)
+	private String name;
+
+	@Column(name = "display_name", length = 100)
+	private String displayName;
+
+	@Column(name = "value", length = 100)
 	private String value;
+
+	@Column(name = "enabled", nullable = false)
+	private boolean enabled = false;
+
+	@Column(name = "description", length = 300)
+	private String description;
 
 }

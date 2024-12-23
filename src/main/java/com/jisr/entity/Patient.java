@@ -54,7 +54,7 @@ public class Patient {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
-	private Role role;
+	private RoleEnum role;
 
 	@Column(name = "first_login", nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
 	private boolean firstLogin = true;

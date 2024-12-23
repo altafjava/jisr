@@ -1,64 +1,57 @@
 package com.jisr.entity;
 
 import java.time.LocalDate;
-import com.jisr.constant.HealthProviderStatus;
+import com.jisr.constant.ProviderStatus;
+import com.jisr.entity.core.AuditableEntity;
+import com.jisr.validator.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "healthcare_providers")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class HealthcareProvider {
+public class HealthcareProvider extends AuditableEntity<Long> {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private static final long serialVersionUID = 1L;
 
-	@Column(nullable = false)
-	private String firstName;
-	private String fatherName;
-	@Column(nullable = false)
-	private String lastName;
-	@Column(nullable = false)
-	private String fullName;
+	@OneToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User user;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+	@Column(name = "gender", length = 10)
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
 
-	@Column(nullable = false)
-	private String phoneNumber;
-
-	@Column(nullable = false)
-	private String password;
-
-	@Column(nullable = false)
-	private String specialization;
-
-	@Column(nullable = false)
-	private String qualification;
-
-	@Column(nullable = false)
-	private String gender;
-
-	@Column(nullable = false)
+	@Column(name = "date_of_birth")
 	private LocalDate dateOfBirth;
 
-	private String photoPath;
-	private String cvPath;
+	@Column(name = "specialization", length = 100)
+	private String specialization;
+
+	@Column(name = "qualification", length = 100)
+	private String qualification;
+
+	@Column(name = "experience")
+	private Integer experience;
+
+	@Column(name = "no_of_medical_licenses")
 	private Integer noOfMedicalLicenses;
 
+	@Column(name = "personal_photo_url")
+	private String personalPhotoUrl;
+
+	@Column(name = "cv_url")
+	private String cvUrl;
+	
 	@Enumerated(EnumType.STRING)
-	private HealthProviderStatus status;
+	private ProviderStatus status;
 
 }
